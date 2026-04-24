@@ -1,0 +1,60 @@
+# Test stack skeleton. The Integration Tester extends this with Playwright
+# commands, volume mounts for test artifacts, and any fixture wiring.
+#
+# Usage:
+#   docker compose -f test/docker-compose.test.yml up --build --abort-on-container-exit
+#
+# Contract:
+#   - `app` runs the production image with LLM_MOCK=true and no MASSIVE_API_KEY
+#     so market data is simulated and LLM responses are deterministic.
+#   - `playwright` runs on the same network and drives the app over HTTP.
+
+name: finally-test
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: finally:test
+    container_name: finally-test-app
+    environment:
+      # Deterministic LLM output via the pinned fixture.
+      LLM_MOCK: "true"
+      # Explicitly empty: forces the simulator for reproducible prices.
+      MASSIVE_API_KEY: ""
+      # Keep OPENROUTER_API_KEY unset — LLM_MOCK=true means it is not used.
+      OPENROUTER_API_KEY: "test-placeholder-not-used"
+      PORTFOLIO_SNAPSHOT_INTERVAL_SECONDS: "60"
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8000/api/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+    networks:
+      - finally-test
+
+  playwright:
+    # Pinned Playwright image — the Integration Tester may bump or swap this.
+    image: mcr.microsoft.com/playwright:v1.48.0-jammy
+    container_name: finally-test-playwright
+    depends_on:
+      app:
+        condition: service_healthy
+    environment:
+      APP_BASE_URL: "http://app:8000"
+    working_dir: /tests
+    volumes:
+      - ./:/tests
+    # Placeholder command — Integration Tester replaces this with the real
+    # test runner invocation (e.g. `npx playwright test`).
+    command: ["sh", "-c", "echo 'Playwright container ready. Integration Tester: wire the runner here.' && sleep 5"]
+    networks:
+      - finally-test
+
+networks:
+  finally-test:
+    driver: bridge
