@@ -11,7 +11,7 @@ type Props = {
 
 export function PositionsTable({ positions, onSelect }: Props) {
   return (
-    <Panel title="Positions" rightSlot={<span className="text-[10px] text-text-muted">{positions.length} rows</span>}>
+    <Panel title="Positions" rightSlot={<span className="text-[10px] text-text-muted">{positions.length} rows</span>} className="shrink-0" bodyClassName="overflow-y-auto max-h-[130px]">
       <div className="overflow-x-auto">
         <table className="w-full text-xs">
           <thead className="bg-bg-panel-raised text-text-muted">

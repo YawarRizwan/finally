@@ -52,8 +52,9 @@ export function ChatPanel({ messages, loading, onSend }: Props) {
         </span>
       }
       className="flex-1"
+      bodyClassName="flex flex-col"
     >
-      <div ref={listRef} className="h-full overflow-y-auto scroll-thin p-3" data-testid="chat-list">
+      <div ref={listRef} className="flex-1 min-h-0 overflow-y-auto scroll-thin p-3" data-testid="chat-list">
         {messages.length === 0 && !loading ? (
           <EmptyState />
         ) : (

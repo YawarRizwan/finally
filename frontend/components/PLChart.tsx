@@ -88,7 +88,7 @@ export function PLChart({ snapshots, startingValue = 10000 }: Props) {
       }
       bodyClassName="relative"
     >
-      <div ref={containerRef} className="h-[220px]" />
+      <div ref={containerRef} className="h-full min-h-[60px]" />
     </Panel>
   );
 }

@@ -50,7 +50,7 @@ export function TradeBar({ defaultTicker = "", onSubmit }: Props) {
   }
 
   return (
-    <Panel title="Trade">
+    <Panel title="Trade" className="shrink-0">
       <div className="flex flex-wrap items-end gap-3 p-3">
         <Field label="Ticker">
           <input

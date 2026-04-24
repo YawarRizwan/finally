@@ -45,7 +45,7 @@ export function Watchlist({ tickers, selected, onSelect, onAdd, onRemove }: Prop
   }
 
   return (
-    <Panel title="Watchlist" rightSlot={<span className="text-[10px] text-text-muted">{tickers.length} symbols</span>}>
+    <Panel title="Watchlist" rightSlot={<span className="text-[10px] text-text-muted">{tickers.length} symbols</span>} className="flex-1 min-h-0" bodyClassName="flex flex-col">
       <form onSubmit={handleAdd} className="flex gap-2 border-b border-border-subtle px-3 py-2">
         <input
           value={newTicker}
@@ -68,7 +68,7 @@ export function Watchlist({ tickers, selected, onSelect, onAdd, onRemove }: Prop
           {error}
         </div>
       ) : null}
-      <div className="max-h-[calc(100vh-220px)] overflow-y-auto scroll-thin">
+      <div className="flex-1 min-h-0 overflow-y-auto scroll-thin">
         <table className="w-full text-xs">
           <thead className="sticky top-0 bg-bg-panel-raised text-text-muted">
             <tr className="text-left">

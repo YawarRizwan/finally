@@ -26,15 +26,15 @@ export function PortfolioHeatmap({ positions, onSelect }: Props) {
 
   return (
     <Panel title="Portfolio Heatmap" rightSlot={<span className="text-[10px] text-text-muted">{positions.length} positions</span>}>
-      <div className="relative p-2">
+      <div className="relative p-2 h-full overflow-hidden">
         {positions.length === 0 ? (
-          <div className="flex h-[280px] items-center justify-center text-xs text-text-muted">
+          <div className="flex h-full min-h-[60px] items-center justify-center text-xs text-text-muted">
             No positions yet. Buy something to see the heatmap.
           </div>
         ) : (
           <svg
             viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-            className="block w-full"
+            className="block w-full h-full"
             preserveAspectRatio="none"
             role="img"
             aria-label="Portfolio heatmap"

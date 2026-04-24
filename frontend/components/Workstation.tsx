@@ -170,7 +170,7 @@ export function Workstation() {
   }, [tickers, selected]);
 
   return (
-    <main className="flex min-h-screen flex-col">
+    <main className="flex h-screen flex-col overflow-hidden">
       <Header portfolio={portfolio.data} status={connection} />
       {watchlistError ? (
         <div className="border-b border-border-subtle bg-down/10 px-4 py-1 text-[11px] text-down">
@@ -189,7 +189,7 @@ export function Workstation() {
         </div>
         <div className="col-span-12 md:col-span-6 flex min-h-0 flex-col gap-2">
           <MainChart ticker={selectedTicker} />
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-2">
+          <div className="grid shrink-0 h-44 grid-cols-1 xl:grid-cols-2 gap-2">
             <PortfolioHeatmap
               positions={portfolio.data?.positions ?? []}
               onSelect={handleSelect}
