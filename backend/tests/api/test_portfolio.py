@@ -9,10 +9,10 @@ def test_initial_portfolio(client: TestClient) -> None:
     r = client.get("/api/portfolio")
     assert r.status_code == 200
     body = r.json()
-    assert body["cash"] == 10000.0
+    assert body["cash_balance"] == 10000.0
     assert body["positions"] == []
     assert body["total_value"] == 10000.0
-    assert body["unrealized_pnl"] == 0.0
+    assert body["total_unrealized_pl"] == 0.0
 
 
 def test_buy_updates_cash_and_positions(client: TestClient) -> None:
@@ -30,13 +30,13 @@ def test_buy_updates_cash_and_positions(client: TestClient) -> None:
     assert trade["executed_at"]
 
     p = client.get("/api/portfolio").json()
-    assert p["cash"] == 9500.0
+    assert p["cash_balance"] == 9500.0
     assert len(p["positions"]) == 1
     pos = p["positions"][0]
     assert pos["ticker"] == "AAPL"
     assert pos["quantity"] == 5
     assert pos["avg_cost"] == 100.0
-    assert pos["price"] == 100.0
+    assert pos["current_price"] == 100.0
 
 
 def test_buy_rejected_when_insufficient_cash(client: TestClient) -> None:
