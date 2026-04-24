@@ -7,12 +7,20 @@ multi-statement operations (e.g., apply_trade) are atomic.
 
 from __future__ import annotations
 
+import os
 import sqlite3
 import threading
 from pathlib import Path
 
-_PROJECT_ROOT = Path(__file__).resolve().parents[3]
-DB_PATH = _PROJECT_ROOT / "db" / "finally.db"
+# In dev: backend/app/db/connection.py -> parents[3] = project root -> db/finally.db
+# In container: /app/app/db/connection.py -> parents[3] = / (wrong)
+# FINALLY_DB_PATH env var overrides both; the Dockerfile sets it to /app/db/finally.db.
+_env_path = os.environ.get("FINALLY_DB_PATH")
+if _env_path:
+    DB_PATH = Path(_env_path)
+else:
+    _PROJECT_ROOT = Path(__file__).resolve().parents[3]
+    DB_PATH = _PROJECT_ROOT / "db" / "finally.db"
 _SCHEMA_PATH = Path(__file__).with_name("schema.sql")
 
 _lock = threading.Lock()

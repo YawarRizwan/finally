@@ -44,23 +44,25 @@ def build_portfolio(cache: PriceCache, user_id: str = "default") -> dict[str, An
             # Fallback so total_value remains meaningful when cache is cold.
             total_market += avg_cost * qty
 
+        mkt_value_pos = price * qty if price is not None else avg_cost * qty
         positions.append(
             {
                 "ticker": ticker,
                 "quantity": qty,
                 "avg_cost": avg_cost,
-                "price": price,
-                "unrealized_pnl": unrealized,
-                "change_percent": change_pct,
+                "current_price": price,
+                "market_value": mkt_value_pos,
+                "unrealized_pl": unrealized if unrealized is not None else 0.0,
+                "unrealized_pl_pct": change_pct if change_pct is not None else 0.0,
             }
         )
 
     total_value = cash + total_market
     return {
-        "cash": cash,
+        "cash_balance": cash,
         "positions": positions,
         "total_value": total_value,
-        "unrealized_pnl": total_unrealized,
+        "total_unrealized_pl": total_unrealized,
     }
 
 

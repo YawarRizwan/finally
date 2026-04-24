@@ -19,6 +19,7 @@ from app.db.repository import (
     recent_chat,
     record_snapshot,
     remove_watchlist,
+    reset_to_defaults,
     update_cash,
 )
 
@@ -42,5 +43,6 @@ __all__ = [
     "record_snapshot",
     "remove_watchlist",
     "reset_connection",
+    "reset_to_defaults",
     "update_cash",
 ]

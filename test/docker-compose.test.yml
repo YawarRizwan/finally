@@ -1,13 +1,11 @@
-# Test stack skeleton. The Integration Tester extends this with Playwright
-# commands, volume mounts for test artifacts, and any fixture wiring.
+# Integration test stack. Runs the production image with the simulator + LLM
+# mock, then drives it with Playwright.
 #
 # Usage:
-#   docker compose -f test/docker-compose.test.yml up --build --abort-on-container-exit
+#   docker compose -f test/docker-compose.test.yml up --build \
+#     --abort-on-container-exit --exit-code-from playwright
 #
-# Contract:
-#   - `app` runs the production image with LLM_MOCK=true and no MASSIVE_API_KEY
-#     so market data is simulated and LLM responses are deterministic.
-#   - `playwright` runs on the same network and drives the app over HTTP.
+# The Playwright container exit code propagates as the run's exit code.
 
 name: finally-test
 
@@ -25,33 +23,34 @@ services:
       MASSIVE_API_KEY: ""
       # Keep OPENROUTER_API_KEY unset — LLM_MOCK=true means it is not used.
       OPENROUTER_API_KEY: "test-placeholder-not-used"
-      PORTFOLIO_SNAPSHOT_INTERVAL_SECONDS: "60"
-    ports:
-      - "8000:8000"
+      PORTFOLIO_SNAPSHOT_INTERVAL_SECONDS: "5"
     healthcheck:
       test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8000/api/health"]
-      interval: 5s
+      interval: 3s
       timeout: 3s
-      retries: 20
-      start_period: 10s
+      retries: 30
+      start_period: 5s
     networks:
       - finally-test
 
   playwright:
-    # Pinned Playwright image — the Integration Tester may bump or swap this.
-    image: mcr.microsoft.com/playwright:v1.48.0-jammy
+    # Pin to a current stable Playwright image. The tag matches the @playwright/test
+    # version in test/package.json so the browser binaries line up with the runner.
+    image: mcr.microsoft.com/playwright:v1.49.0-jammy
     container_name: finally-test-playwright
     depends_on:
       app:
         condition: service_healthy
     environment:
       APP_BASE_URL: "http://app:8000"
+      CI: "true"
     working_dir: /tests
     volumes:
       - ./:/tests
-    # Placeholder command — Integration Tester replaces this with the real
-    # test runner invocation (e.g. `npx playwright test`).
-    command: ["sh", "-c", "echo 'Playwright container ready. Integration Tester: wire the runner here.' && sleep 5"]
+    # Install deps against the mounted workspace, then run the suite. The
+    # container's exit code (propagated by --exit-code-from playwright) is
+    # the suite's exit code.
+    command: ["sh", "-c", "npm ci && npx playwright test"]
     networks:
       - finally-test
 

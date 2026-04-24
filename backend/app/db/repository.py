@@ -310,3 +310,37 @@ def recent_chat(limit: int = 20, user_id: str = DEFAULT_USER_ID) -> list[dict[st
         item["actions"] = json.loads(item["actions"]) if item["actions"] else None
         result.append(item)
     return result
+
+
+def reset_to_defaults(user_id: str = DEFAULT_USER_ID) -> None:
+    """Hard-reset a user back to the initial seeded state.
+
+    Intended for E2E test teardown. Resets cash to $10,000, clears all
+    positions, trades, chat messages, and portfolio snapshots, then
+    restores the default 10-ticker watchlist.
+    """
+    from app.db.seed import DEFAULT_CASH, DEFAULT_WATCHLIST
+
+    now = _now()
+    conn = _conn()
+    with conn:
+        conn.execute(
+            "UPDATE users_profile SET cash_balance = ? WHERE id = ?",
+            (DEFAULT_CASH, user_id),
+        )
+        conn.execute("DELETE FROM positions WHERE user_id = ?", (user_id,))
+        conn.execute("DELETE FROM trades WHERE user_id = ?", (user_id,))
+        conn.execute("DELETE FROM chat_messages WHERE user_id = ?", (user_id,))
+        conn.execute("DELETE FROM portfolio_snapshots WHERE user_id = ?", (user_id,))
+        conn.execute(
+            "INSERT INTO portfolio_snapshots (id, user_id, total_value, recorded_at) "
+            "VALUES (?, ?, ?, ?)",
+            (str(uuid.uuid4()), user_id, DEFAULT_CASH, now),
+        )
+        conn.execute("DELETE FROM watchlist WHERE user_id = ?", (user_id,))
+        for ticker in DEFAULT_WATCHLIST:
+            conn.execute(
+                "INSERT OR IGNORE INTO watchlist (id, user_id, ticker, added_at) "
+                "VALUES (?, ?, ?, ?)",
+                (str(uuid.uuid4()), user_id, ticker, now),
+            )

@@ -56,7 +56,7 @@ def _build_context(cache: PriceCache) -> dict[str, Any]:
         )
     ]
     return {
-        "cash": portfolio["cash"],
+        "cash": portfolio["cash_balance"],
         "positions": portfolio["positions"],
         "watchlist": watchlist_rows,
         "total_value": portfolio["total_value"],

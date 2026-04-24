@@ -55,10 +55,30 @@ export function useSSE(enabled: boolean = true): ConnectionStatus {
 
     open();
 
+    // Expose a force-disconnect hook for E2E tests. Closing the EventSource
+    // does NOT fire onerror, so we also trigger the reconnect cycle manually.
+    if (typeof window !== "undefined") {
+      (window as typeof window & { __finallySSEClose?: () => void }).__finallySSEClose =
+        () => {
+          const es = esRef.current;
+          if (!es) return;
+          es.close();
+          esRef.current = null;
+          // Mirror what onerror would do on a CLOSED connection.
+          setStatus("reconnecting");
+          setTimeout(() => {
+            if (!closed) open();
+          }, 2000);
+        };
+    }
+
     return () => {
       closed = true;
       esRef.current?.close();
       esRef.current = null;
+      if (typeof window !== "undefined") {
+        delete (window as typeof window & { __finallySSEClose?: () => void }).__finallySSEClose;
+      }
       setStatus("disconnected");
     };
   }, [enabled]);
