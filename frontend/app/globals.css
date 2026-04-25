@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg-deep: #0d1117;
+  --color-bg-panel: #1a1a2e;
+  --color-bg-panel-raised: #1f2139;
+  --color-border-subtle: #2a2d45;
+  --color-border-strong: #3a3f5f;
+  --color-text-primary: #e6edf3;
+  --color-text-muted: #8b949e;
+  --color-text-dim: #6b7280;
+  --color-accent: #ecad0a;
+  --color-primary: #209dd7;
+  --color-submit: #753991;
+  --color-up: #3fb950;
+  --color-down: #f85149;
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: var(--color-bg-deep);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+body {
+  font-feature-settings: "tnum" 1, "cv11" 1;
+}
+
+/* Price flash animations: a brief tint on the price cell that fades out. */
+@keyframes flashUp {
+  0% {
+    background-color: rgba(63, 185, 80, 0.45);
+  }
+  100% {
+    background-color: rgba(63, 185, 80, 0);
+  }
+}
+
+@keyframes flashDown {
+  0% {
+    background-color: rgba(248, 81, 73, 0.45);
+  }
+  100% {
+    background-color: rgba(248, 81, 73, 0);
+  }
+}
+
+.flash-up {
+  animation: flashUp 500ms ease-out;
+}
+
+.flash-down {
+  animation: flashDown 500ms ease-out;
+}
+
+/* Hide scrollbar gutter jitter in chat scroll */
+.scroll-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scroll-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroll-thin::-webkit-scrollbar-thumb {
+  background: #2a2d45;
+  border-radius: 3px;
+}
+
+.scroll-thin::-webkit-scrollbar-thumb:hover {
+  background: #3a3f5f;
+}

@@ -1,0 +1,18 @@
+# Convenience wrapper for local development. The production runtime contract
+# is a single `docker run` (see scripts/start_*.sh|ps1). Do not depend on
+# compose for production.
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: finally:latest
+    container_name: finally
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./db:/app/db
+    restart: unless-stopped

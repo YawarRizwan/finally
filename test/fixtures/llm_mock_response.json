@@ -1,0 +1,16 @@
+{
+  "message": "Bought 10 AAPL at $185.25.",
+  "trades": [
+    {
+      "ticker": "AAPL",
+      "side": "buy",
+      "quantity": 10,
+      "status": "executed",
+      "price": 185.25,
+      "notional": 1852.50,
+      "executed_at": "2026-01-01T00:00:00.000Z",
+      "error": null
+    }
+  ],
+  "watchlist_changes": []
+}
